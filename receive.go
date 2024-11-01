@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"log"
-	"strconv"
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -68,10 +67,8 @@ func main() {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		for d := range msgs {
-			n, err := strconv.Atoi(string(d.Body))
-			failOnError(err, "Failed to convert body to integer")
+			log.Printf("Received message: %s", string(d.Body))
 
-			log.Printf(" [.] fib(%d)", n)
 			sendMail("dev.viggo@gmail.com")
 			response := "Successfully sent email!"
 

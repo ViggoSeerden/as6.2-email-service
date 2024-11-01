@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/smtp"
 	"os"
+
+	godotenv "github.com/joho/godotenv"
 )
 
 func sendMail(email string) {
@@ -12,6 +14,8 @@ func sendMail(email string) {
 	smtpPort := "587" // TLS port for Gmail
 
 	// Sender and recipient information.
+	godotenv.Load(".env.local")
+
 	sender := "osso.online.site@gmail.com"
 	password := os.Getenv("APP_PASSWORD") // App Password if using 2FA
 	recipient := email
