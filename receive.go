@@ -49,7 +49,7 @@ func main() {
 	failOnError(err, "Failed to declare a queue")
 
 	err = ch.Qos(
-		1,     // prefetch count
+		5,     // prefetch count
 		0,     // prefetch size
 		false, // global
 	)
@@ -69,15 +69,17 @@ func main() {
 	var forever chan struct{}
 
 	go func() {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
 		for d := range msgs {
 			log.Printf("Received message: %s", string(d.Body))
+
+			// Create a new context for each message
+			publishCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
 
 			sendMail(string(d.Body))
 			response := "Successfully sent email!"
 
-			err = ch.PublishWithContext(ctx,
+			err := ch.PublishWithContext(publishCtx,
 				"",        // exchange
 				d.ReplyTo, // routing key
 				false,     // mandatory
@@ -87,9 +89,13 @@ func main() {
 					CorrelationId: d.CorrelationId,
 					Body:          []byte(response),
 				})
-			failOnError(err, "Failed to respond.")
+			if err != nil {
+				log.Printf("Failed to respond: %s", err)
+			}
 
-			d.Ack(false)
+			if ackErr := d.Ack(false); ackErr != nil {
+				log.Printf("Failed to acknowledge message: %s", ackErr)
+			}
 		}
 	}()
 
