@@ -16,7 +16,7 @@ func sendMail(email string) {
 	// Sender and recipient information.
 	godotenv.Load(".env.local")
 
-	sender := "osso.online.site@gmail.com"
+	sender := os.Getenv("SENDER_EMAIL")
 	password := os.Getenv("APP_PASSWORD") // App Password if using 2FA
 	recipient := email
 

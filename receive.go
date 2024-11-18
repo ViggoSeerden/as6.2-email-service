@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"os"
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -25,7 +26,11 @@ func failOnError(err error, msg string) {
 // }
 
 func main() {
-	conn, err := amqp.Dial("amqp://localhost")
+	rabbitmqURL := os.Getenv("RABBITMQ")
+	if rabbitmqURL == "" {
+		rabbitmqURL = "amqp://localhost"
+	}
+	conn, err := amqp.Dial(rabbitmqURL)
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
@@ -69,7 +74,7 @@ func main() {
 		for d := range msgs {
 			log.Printf("Received message: %s", string(d.Body))
 
-			sendMail("dev.viggo@gmail.com")
+			sendMail(string(d.Body))
 			response := "Successfully sent email!"
 
 			err = ch.PublishWithContext(ctx,
