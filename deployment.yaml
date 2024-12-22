@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: email-service
-          image: PLACEHOLDER_AZURE_CONTAINER_REGISTRY.azurecr.io/as6-2_osso_email_service:latest
+          image: PLACEHOLDER_AZURE_CONTAINER_REGISTRY.azurecr.io/as6-2_osso_email_service:main
           ports:
             - containerPort: 8080
           env:
