@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: email-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: email-service
+  template:
+    metadata:
+      labels:
+        app: email-service
+    spec:
+      containers:
+        - name: email-service
+          image: PLACEHOLDER_AZURE_CONTAINER_REGISTRY.azurecr.io/as6-2_osso_email_service:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: RABBITMQ
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: AMQP_RABBITMQ
+            - name: APP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: APP_PASSWORD
+            - name: SENDER_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: SENDER_EMAIL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: email-service
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: email-service
+  type: ClusterIP
