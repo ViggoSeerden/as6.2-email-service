@@ -8,7 +8,7 @@ import (
 	godotenv "github.com/joho/godotenv"
 )
 
-func sendMail(email string) {
+func sendMail(email string, content string) {
 	// Gmail SMTP server configuration.
 	smtpHost := "smtp.gmail.com"
 	smtpPort := "587" // TLS port for Gmail
@@ -22,7 +22,7 @@ func sendMail(email string) {
 
 	// Email content.
 	subject := "Subject: Test Email from Osso Online\n"
-	body := "This is a test email sent from the Osso Online Email Microservice, written in Go"
+	body := content
 	message := []byte(subject + "\n" + body)
 
 	// Set up authentication information.
